@@ -7,7 +7,7 @@ spaces_regex = re.compile(r'(<b>|<\/b>)?(?P<spaces>\s*).*')
 
 FILE_LOCATION = 'RawScripts/'
 
-LOG = 'spaceLog.log'
+LOG = 'spaceLog2.log'
 
 def GetMovieList(): #get movies that are found in the IMSDB base
     with open('RawScripts/logs/matched.json', 'r') as matched:
@@ -49,7 +49,7 @@ def main():
                     bold = True
                 spaces = spaces_regex.search(line)
                 if spaces:
-                    num = 0
+                    num = len(spaces.group('spaces'))
                     if bold:
                         if num in boldLines:
                             boldLines[num] += 1

@@ -13,7 +13,7 @@ data = json.loads(re)
 sorted_list = []
 
 for movie in data:
-    if movie['rating'] is 2:
+    if movie['rating'] is 2: #look here
         sorted_list.append(movie['title'].replace(',', ''))
         print('one gone')
 

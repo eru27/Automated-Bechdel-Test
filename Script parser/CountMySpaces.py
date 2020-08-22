@@ -1,3 +1,5 @@
+#doesn't work, 'cms2.py' as working version
+
 import re
 import json
 from bs4 import BeautifulSoup

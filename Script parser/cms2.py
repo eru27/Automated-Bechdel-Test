@@ -9,17 +9,19 @@ FILE_LOCATION = 'RawScripts/'
 
 LOG = 'spaceLog.log'
 
-def GetMovieList():
+def GetMovieList(): #get movies that are found in the IMSDB base
     with open('RawScripts/logs/matched.json', 'r') as matched:
         matchedList = json.loads(matched.read())
     movieNames = []
     for movie in matchedList:
-        movieNames.append(movie[2])
+        movieNames.append(movie[2]) #third member in a list is name of the movie in the IMSDB base
 
     return movieNames
 
 def main():
-    movieNames = GetMovieList()
+    movieNames = GetMovieList() #list of movies so we can load scripts by name
+
+    #this was made for logs
     bolds = []
     norms = []
 
@@ -29,14 +31,15 @@ def main():
         with open(FILE_LOCATION + movie, 'r') as movieScript:
             soup = BeautifulSoup(movieScript.read())
             valid = True
-            if soup.p:
+            if soup.p: #there are different types of scripts, the ones with <p> tags are already parsed
                 valid = False
 
         if valid:
             with open(FILE_LOCATION + movie, 'r') as movieScript:
                 script = movieScript.readlines()
             
-            boldLines = {}
+            #key is number of leading spaces in line, value is number of lines with that many leading spaces
+            boldLines = {} #we separate bolded lines and 'normal' ones (<b> tag)
             normLines = {}
             
 

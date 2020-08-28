@@ -3,11 +3,11 @@ import json
 from bs4 import BeautifulSoup
 
 bold_regex = re.compile(r'<b>')
-spaces_regex = re.compile(r'(<b>|<\/b>)?(?P<spaces>\s*).*')
+spaces_regex = re.compile(r'(<\/b>)?(<b>)?(?P<spaces>\s*)\S+')
 
 FILE_LOCATION = 'RawScripts/'
 
-LOG = 'spaceLog2.log'
+LOG = 'spaceLog0.log'
 
 def GetMovieList(): #get movies that are found in the IMSDB base
     with open('RawScripts/logs/matched.json', 'r') as matched:
@@ -22,8 +22,8 @@ def main():
     movieNames = GetMovieList() #list of movies so we can load scripts by name
 
     #this was made for logs
-    bolds = []
-    norms = []
+    #bolds = []
+    #norms = []
 
     log = open(LOG, 'w')
 
@@ -60,7 +60,20 @@ def main():
                             normLines[num] += 1
                         else:
                             normLines[num] = 1
+            
+            '''
+            b = boldLines.copy()
+            n = normLines.copy()
 
+            for key in b:
+                if boldLines[key] < 500:
+                    del boldLines[key]
+
+            for key in n:
+                if normLines[key] < 500:
+                    del normLines[key]
+            '''
+            
             log.write(movie + '\n')
             log.write(str(sorted(boldLines.items())) + '\n')
             log.write(str(sorted(normLines.items())) + '\n')

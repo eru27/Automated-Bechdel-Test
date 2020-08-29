@@ -7,7 +7,6 @@ MIN_TRASHOLD = 500
 bold_regex = re.compile(r'<b>')
 spaces_regex = re.compile(r'(<\/b>)?(<b>)?(?P<spaces>\s*)\S+')
 
-'''
 FILE_LOCATION = 'RawScripts/'
 
 LOG = 'spaceLog2.log'
@@ -20,7 +19,6 @@ def GetMovieList(): #get movies that are found in the IMSDB base
         movieNames.append(movie[2]) #third member in a list is name of the movie in the IMSDB base
 
     return movieNames
-'''
 
 def main(scriptName, openFile):
     #movieNames = GetMovieList() #list of movies so we can load scripts by name
@@ -30,13 +28,21 @@ def main(scriptName, openFile):
     #norms = []
 
     #log = open(LOG, 'w')
+    '''
     openFile.seek(0)
     soup = BeautifulSoup(openFile.read())
+    '''
+    
     valid = True
+    if scriptName == 'Ace Ventura: Pet Detective':
+        valid = False
+    '''
     if soup.p: #there are different types of scripts, the ones with <p> tags are already parsed
         valid = False
-
+        print(soup.p)
+        print(str(valid) + '**************************************************************\n\n')
         return None
+    '''
 
     if valid:
         openFile.seek(0)
@@ -63,7 +69,10 @@ def main(scriptName, openFile):
                         normLines[num] += 1
                     else:
                         normLines[num] = 1
-        
+                '''
+                if len(spaces.group('spaces')) == 16 and bold:
+                    print('aaaaaaaaa\n\n\n\n' + line)
+                '''
         #print(boldLines[32])
 
         '''
@@ -85,7 +94,9 @@ def main(scriptName, openFile):
         sortedBold = sorted(boldLines, key = boldLines.get, reverse = True)
         sortedNormal = sorted(normLines, key = normLines.get, reverse = True)
         
-        if sortedBold[0] > 5:
+        if (sortedBold[0] >= 4):
+            characterSpaces = sortedBold[0]
+        elif sortedBold[1] < sortedBold[0]: #################
             characterSpaces = sortedBold[0]
         else:
             characterSpaces = sortedBold[1]
@@ -97,7 +108,9 @@ def main(scriptName, openFile):
             speechSpaces = sortedNormal[0]
             elseSpaces = -100
 
+        print(scriptName)
         print(characterSpaces, speechSpaces)
+        print()
 
 
         characterRange.append(characterSpaces)
@@ -105,7 +118,7 @@ def main(scriptName, openFile):
 
         if speechSpaces > characterSpaces:
             with open('spaceError', 'a') as sError:
-                sError.write(scriptName)
+                sError.write(scriptName + '\n')
 
         for bSpace in sortedBold[1:]:
             if abs(characterSpaces - bSpace) <= 5:
@@ -121,9 +134,24 @@ def main(scriptName, openFile):
         charTuple = (min(characterRange), max(characterRange))
         speechTuple = (min(speechRange), max(speechRange))
 
-        return charTuple, speechTuple
+        dick = {}
 
-with open('RawScripts/Top Gun', 'r') as f:
-    res = main('Top Gun', f)
+        dick['title'] = scriptName
+        dick['char'] = charTuple
+        dick['speech'] = speechTuple
 
-print(res)
+        return dick
+
+movies = GetMovieList()
+
+res = []
+
+for movie in movies:
+    with open('RawScripts/' + movie, 'r') as f:
+        try:
+            res.append(main(movie, f).copy())
+        except:
+            print(movie)
+    
+with open('realspaces2.log', 'w') as k:
+    k.write(json.dumps(res))

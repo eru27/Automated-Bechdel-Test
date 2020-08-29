@@ -7,7 +7,7 @@ spaces_regex = re.compile(r'(<\/b>)?(<b>)?(?P<spaces>\s*)\S+')
 
 FILE_LOCATION = 'RawScripts/'
 
-LOG = 'spaceLog0.log'
+LOG = 'spaceLog.log'
 
 def GetMovieList(): #get movies that are found in the IMSDB base
     with open('RawScripts/logs/matched.json', 'r') as matched:
@@ -15,6 +15,7 @@ def GetMovieList(): #get movies that are found in the IMSDB base
     movieNames = []
     for movie in matchedList:
         movieNames.append(movie[2]) #third member in a list is name of the movie in the IMSDB base
+        #print(movie[2])
 
     return movieNames
 
@@ -31,8 +32,10 @@ def main():
         with open(FILE_LOCATION + movie, 'r') as movieScript:
             soup = BeautifulSoup(movieScript.read())
             valid = True
+            '''
             if soup.p: #there are different types of scripts, the ones with <p> tags are already parsed
                 valid = False
+            '''
 
         if valid:
             with open(FILE_LOCATION + movie, 'r') as movieScript:

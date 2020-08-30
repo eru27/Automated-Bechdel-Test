@@ -3,6 +3,7 @@
 /Script parser/names/names
 /Script parser/ParsedScripts
 /Script parser/RawScripts
+/Script parser/__pycache__
 *.log
 *.csv
 *.zip

@@ -153,5 +153,5 @@ for movie in movies:
         except:
             print(movie)
     
-with open('realspaces2.log', 'w') as k:
+with open('spacelogs/realspaces2.json', 'w') as k:
     k.write(json.dumps(res))

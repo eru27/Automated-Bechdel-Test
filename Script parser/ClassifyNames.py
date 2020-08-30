@@ -1,5 +1,5 @@
-FEMALE_NAMES = 'names/femaleNamesCleaned.csv'
-MALE_NAMES = 'names/maleNamesCleaned.csv'
+FEMALE_NAMES = 'names/femaleNamesCleanedLC.csv'
+MALE_NAMES = 'names/maleNamesCleanedLC.csv'
 
 def ClassifyNames(namesList):
     with open(FEMALE_NAMES, 'r') as femaleFile:
@@ -10,9 +10,15 @@ def ClassifyNames(namesList):
     maleList = []
     unknownList = []
     for name in namesList:
-        if name in femaleBase:
+        '''
+        if name == 'LUIGI':
+            print(name)
+            '''
+        if name.split(' ')[0] in femaleBase:
+            #print(name)
             femaleList.append(name)
-        elif name in maleBase:
+        elif name.split(' ')[0] in maleBase:
+            #print(name)
             maleList.append(name)
         else:
             unknownList.append(name)

@@ -1,5 +1,5 @@
-femaleNames_file = open('femaleNames.csv', 'r')
-maleNames_file = open('maleNames.csv', 'r')
+femaleNames_file = open('names/femaleNames.csv', 'r')
+maleNames_file = open('names/maleNames.csv', 'r')
 
 femaleNames = femaleNames_file.read().split(',')
 maleNames = maleNames_file.read().split(',')
@@ -24,8 +24,14 @@ maleList = list(maleSet)
 femaleList.sort()
 maleList.sort()
 
-femaleNamesCleaned = open('femaleNamesCleaned.csv', 'w')
-maleNamesCleaned = open('maleNamesCleaned.csv', 'w')
+for i in range(len(femaleList)):
+    femaleList[i] = femaleList[i].upper()
+
+for j in range(len(maleList)):
+    maleList[j] = maleList[j].upper()
+
+femaleNamesCleaned = open('names/femaleNamesCleanedLC.csv', 'w')
+maleNamesCleaned = open('names/maleNamesCleanedLC.csv', 'w')
 
 femaleNamesCleaned.write(femaleList[0].replace("'", ''))
 for name in femaleList[1:]:

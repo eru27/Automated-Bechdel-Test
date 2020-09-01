@@ -1,4 +1,4 @@
-path = 'names/yob'
+path = 'names/names/yob'
 ext = '.txt'
 
 female = []
@@ -8,9 +8,9 @@ for i in range(1880,2018):
     with open(path + str(i) + ext, 'r') as openFileObject:
         for line in openFileObject:
             current = line[:-1].split(',')
-            if current[1] == 'F' and current[0] not in female:
+            if (current[1] == 'F') and (current[0] not in female) and (int(current[2]) > 499):
                 female.append(current[0])
-            elif current[0] not in male:
+            elif (current[0] not in male) and (int(current[2]) > 499):
                 male.append(current[0])
     openFileObject.close()
     print(i, '\n')
@@ -18,7 +18,7 @@ for i in range(1880,2018):
 female.sort()
 male.sort()
 
-fe = open('femaleNames.txt', 'w')
+fe = open('femaleNames2.txt', 'w')
 
 fe.write(female[0].replace("'",''))
 for name in female[1:]:
@@ -26,7 +26,7 @@ for name in female[1:]:
 
 fe.close()
 
-ma = open('maleNames.txt', 'w')
+ma = open('maleNames2.txt', 'w')
 
 ma.write(male[0].replace("'", ''))
 for name in male[1:]:

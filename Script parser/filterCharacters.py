@@ -1,6 +1,15 @@
 import json
 import re
 
+as_regex = re.compile(r'\sas\s.*')
+
+woman_regex = re.compile(r'woman', flags = re.IGNORECASE)
+female_regex = re.compile(r'female', flags = re.IGNORECASE)
+lady_regex = re.compile(r'lady', flags = re.IGNORECASE)
+man_regex = re.compile(r'man', flags = re.IGNORECASE)
+male_regex = re.compile(r'male', flags = re.IGNORECASE)
+BS_REGEX_LIST = [woman_regex, female_regex, lady_regex, man_regex, male_regex]
+
 def GetMovieList(): #get movies that are found in the IMSDB base
     with open('RawScripts/logs/matched.json', 'r') as matched:
         matchedList = json.loads(matched.read())
@@ -9,6 +18,14 @@ def GetMovieList(): #get movies that are found in the IMSDB base
         movieNames.append(movie[0]) #third member in a list is name of the movie in the Bechdel base
 
     return movieNames
+
+
+def AmIBS(name):
+    isBS = False
+    for regex in BS_REGEX_LIST:
+        if regex.search(name):
+            isBS = True
+    return isBS
 
 with open('names/femaleNames2.txt', 'r') as female:
     femaleNames = female.read().split(',')
@@ -27,14 +44,35 @@ for movie in movieList:
     try:
         with open('characters/' + movie + '.json') as charF:
             characters = json.loads(charF.read())
+
+        for i in range(len(characters)):
+            for j in range(len(characters[i])):
+                #print(characters[i][j])
+                characters[i][j] = as_regex.sub('', characters[i][j])
+                #print(characters[i][j])
+
+----------------------------------------------------------------------------------------------------------
         
         for femaleChar in characters[0]:
             found = False
             counter = 0
-            while (not found) and (counter < len(femaleNames)):
-                if re.search(' ' + re.escape(femaleNames[counter]) + ' ', ' ' + re.escape(femaleChar) + ' ', flags = re.IGNORECASE):
-                    if femaleChar == 'Female Jogger ':
-                        print(femaleNames[counter])
+            isBS = AmIBS(femaleChar)
+            while (not found) and (not isBS) and (counter < len(femaleNames)):
+                '''
+                if femaleChar == 'Lindsay Jamison ' and femaleNames[counter] == 'Lindsay':
+                    n = re.compile(' ' + re.escape(femaleNames[counter]) + ' ', flags = re.IGNORECASE)
+                    c = ' ' + femaleChar + ' '
+                    print()
+                    print('!!!!!!!!!!!!!!!!!!!!!')
+                    print()
+                    print(n, c, n.search(c), bool(n.search(c)))
+                    print()
+                    print('!!!!!!!!!!!!!!!!!!!!!')
+                    print()
+                '''
+                name = re.compile(' ' + re.escape(femaleNames[counter]) + ' ', flags= re.IGNORECASE)
+                if name.search(' ' + femaleChar + ' '):
+                    print('yay')
                     found = True
                 counter += 1
 
@@ -50,7 +88,9 @@ for movie in movieList:
             found = False
             counter = 0
             while (not found) and (counter < len(maleNames)):
-                if re.search(' ' + re.escape(maleNames[counter]) + ' ', ' ' +  re.escape(maleChar) + ' ', flags = re.IGNORECASE):
+                name = re.compile(' ' + re.escape(maleNames[counter]) + ' ', flags = re.IGNORECASE)
+                if name.search(' ' +  re.escape(maleChar) + ' '):
+                    print('yay')
                     found = True
                 counter += 1
 
@@ -61,9 +101,12 @@ for movie in movieList:
         
         print('m-done')
 
+-------------------------------------------------------------------------
+
         log.write(str((movie, len(fixedCharacters[2]), fixedCharacters[2])))
         fixedCharacters[2] += characters[2]
     except:
+        print(n.search(' ' + re.escape(femaleChar) + ' ', flags = re.IGNORECASE))
         print(movie + '\n')
     
     with open('characters/fixed/' + movie + '.json', 'w') as out:

@@ -6,9 +6,18 @@ as_regex = re.compile(r'\sas\s.*')
 woman_regex = re.compile(r'woman', flags = re.IGNORECASE)
 female_regex = re.compile(r'female', flags = re.IGNORECASE)
 lady_regex = re.compile(r'lady', flags = re.IGNORECASE)
+girl_regex = re.compile(r'girl', flags = re.IGNORECASE)
 man_regex = re.compile(r'man', flags = re.IGNORECASE)
 male_regex = re.compile(r'male', flags = re.IGNORECASE)
+guy_regex = re.compile(r'guy', flags = re.IGNORECASE)
+boy_regex = re.compile(r'boy', flags = re.IGNORECASE)
+#dr_regex = re.compile(r'dr', flags = re.IGNORECASE)
 BS_REGEX_LIST = [woman_regex, female_regex, lady_regex, man_regex, male_regex]
+
+FAULTY_LOG = 'characters/logs/badlymatched.log'
+FOUND_LOG = 'characters/logs/hiifound.log'
+
+TRASHOLD = 2
 
 def GetMovieList(): #get movies that are found in the IMSDB base
     with open('RawScripts/logs/matched.json', 'r') as matched:
@@ -27,92 +36,105 @@ def AmIBS(name):
             isBS = True
     return isBS
 
-with open('names/femaleNames2.txt', 'r') as female:
-    femaleNames = female.read().split(',')
+def GetNames():
+    with open('names/femaleNames2.txt', 'r') as female:
+        femaleNames = female.read().split(',')
 
-with open('names/maleNames2.txt', 'r') as male:
-    maleNames = male.read().split(',')
+    #with open('names/maleNames2.txt', 'r') as male:
+    #    maleNames = male.read().split(',')
 
-movieList = GetMovieList()
+    ###############
+    femaleNames += ['MRS', 'MISS']
+    maleNames = []
 
-gc = 1
+    ###############
 
-log = open('filter.log', 'w')
+    return (femaleNames, maleNames)
 
-for movie in movieList:
-    fixedCharacters = [[],[],[]]
-    try:
-        with open('characters/' + movie + '.json') as charF:
-            characters = json.loads(charF.read())
+def main():
+    movieList = GetMovieList()
+    ogNames = GetNames()
 
-        for i in range(len(characters)):
-            for j in range(len(characters[i])):
+    gc = 1
+
+    #log = open('filter.log', 'w')
+
+    with open(FAULTY_LOG, 'w') as fl:
+        fl.write('')
+
+    with open(FOUND_LOG, 'w') as hif:
+        hif.write('')
+
+    for movie in movieList:
+        fixedCharacters = [[],[],[]]
+        try:
+            with open('characters/' + movie + '.json', 'r') as charF:
+                characters = json.loads(charF.read())
+
+            for i in range(len(characters[0])):
                 #print(characters[i][j])
-                characters[i][j] = as_regex.sub('', characters[i][j])
+                characters[0][i] = as_regex.sub('', characters[0][i])
+                if characters[0][i][-1] == ' ':
+                    characters[0][i] = characters[0][i][:-1]
                 #print(characters[i][j])
 
-----------------------------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------------------------
+            state = 0
+            trash = 0
+            trashStore = [[],[]]
+            for character in characters[0]:
+                found = False
+                counter = 0
+                isBS = AmIBS(character)
+                while (not found) and (not isBS) and (counter < len(ogNames[0])):
+                    name = re.compile(' ' + re.escape(ogNames[0][counter]) + ' ', flags= re.IGNORECASE)
+                    if name.search(r' ' + character + r' '):
+                        print('yay')
+                        found = True
+                    counter += 1
+
+                if found:
+                    fixedCharacters[0].append(character)
+
+                    if state == 0:
+                        trash = 0
+                    else:
+                        trash += 1
+                        trashStore[0].append(character)
+                else:
+                    fixedCharacters[2].append(character)
+
+                    if state == 0:
+                        trash += 1
+                        trashStore[1].append(character)
+
+                        if trash >= TRASHOLD:
+                            state = 1
+
+            with open(FAULTY_LOG, 'a') as fl:
+                fl.write(movie + ', ' + str(trashStore) + ', ' + str(trash) + '\n')
+
+            with open(FOUND_LOG, 'a') as hif:
+                hif.write(str(movie) + ', ' + str(len(fixedCharacters[0])) + ', ' + str(len(fixedCharacters[2])) + '\n')
+
+            #fixedCharacters[1] = characters[1]
+            #fixedCharacters[2] += characters[2]
+        except:
+            print(name.search(' ' + re.escape(character) + ' ', flags = re.IGNORECASE))
+            print(movie + '\n')
         
-        for femaleChar in characters[0]:
-            found = False
-            counter = 0
-            isBS = AmIBS(femaleChar)
-            while (not found) and (not isBS) and (counter < len(femaleNames)):
-                '''
-                if femaleChar == 'Lindsay Jamison ' and femaleNames[counter] == 'Lindsay':
-                    n = re.compile(' ' + re.escape(femaleNames[counter]) + ' ', flags = re.IGNORECASE)
-                    c = ' ' + femaleChar + ' '
-                    print()
-                    print('!!!!!!!!!!!!!!!!!!!!!')
-                    print()
-                    print(n, c, n.search(c), bool(n.search(c)))
-                    print()
-                    print('!!!!!!!!!!!!!!!!!!!!!')
-                    print()
-                '''
-                name = re.compile(' ' + re.escape(femaleNames[counter]) + ' ', flags= re.IGNORECASE)
-                if name.search(' ' + femaleChar + ' '):
-                    print('yay')
-                    found = True
-                counter += 1
 
-            if found:
-                fixedCharacters[0].append(femaleChar)
-            else:
-                fixedCharacters[2].append(femaleChar)
-            #print(1)
-
-        print('f-done')
-
-        for maleChar in characters[1]:
-            found = False
-            counter = 0
-            while (not found) and (counter < len(maleNames)):
-                name = re.compile(' ' + re.escape(maleNames[counter]) + ' ', flags = re.IGNORECASE)
-                if name.search(' ' +  re.escape(maleChar) + ' '):
-                    print('yay')
-                    found = True
-                counter += 1
-
-            if found:
-                fixedCharacters[1].append(maleChar)
-            else:
-                fixedCharacters[2].append(maleChar)
+        with open('characters/woman/' + movie + '.json', 'w') as out:
+            out.write(json.dumps((fixedCharacters[0], fixedCharacters[2])))
+            
+        '''
+        with open('characters/fixed/' + movie + '.json', 'w') as out:
+            out.write(json.dumps(fixedCharacters))
+        '''
         
-        print('m-done')
+        print(str(gc) + '/' + str(len(movieList)) + '\n')
+        gc += 1
 
--------------------------------------------------------------------------
+    #log.close()
 
-        log.write(str((movie, len(fixedCharacters[2]), fixedCharacters[2])))
-        fixedCharacters[2] += characters[2]
-    except:
-        print(n.search(' ' + re.escape(femaleChar) + ' ', flags = re.IGNORECASE))
-        print(movie + '\n')
-    
-    with open('characters/fixed/' + movie + '.json', 'w') as out:
-        out.write(json.dumps(fixedCharacters))
-    
-    print(str(gc) + '/' + str(len(movieList)) + '\n')
-    gc += 1
-
-log.close()
+main()

@@ -9,18 +9,17 @@ FILE_LOCATION = 'RawScripts/'
 
 LOG = 'spaceLog.log'
 
-def GetMovieList(): #get movies that are found in the IMSDB base
+def getMovieList(): #get movies that are found in the IMSDB base
     with open('RawScripts/logs/matched.json', 'r') as matched:
         matchedList = json.loads(matched.read())
     movieNames = []
     for movie in matchedList:
         movieNames.append(movie[2]) #third member in a list is name of the movie in the IMSDB base
-        #print(movie[2])
 
     return movieNames
 
 def main():
-    movieNames = GetMovieList() #list of movies so we can load scripts by name
+    movieNames = getMovieList() #list of movies so we can load scripts by name
 
     #this was made for logs
     #bolds = []

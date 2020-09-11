@@ -31,10 +31,12 @@ def GetMovieList(): #get movies that are found in the IMSDB base
     with open('RawScripts/logs/matched.json', 'r') as matched:
         matchedList = json.loads(matched.read())
     movieNames = []
+    movieNames2 = []
     for movie in matchedList:
         movieNames.append(movie[2]) #third member in a list is name of the movie in the IMSDB base
+        movieNames2.append(movie[0])
 
-    return movieNames
+    return movieNames, movieNames2
 
 def compileRegex(movieName, realSpaces): #find number od spaces for line types and compile regexes ---------------radi?????????????????????
     found = False
@@ -66,7 +68,7 @@ def cleanMe(line): #remove '\n' or ' ' from the end of line because regex also g
 
 
 
-def parser(movie, read):
+def parser(movie, read, mn):
     inFile = open('RawScripts/' + movie, 'r')
     #outFile = open('ParsedScripts/' + movie, 'w')
 
@@ -115,7 +117,7 @@ def parser(movie, read):
                 speech['character'] = cleanMe(character_regex.search(line).group('character'))
                 #nameSet.add(speech['character'])
                 
-            elif speech_regex.search(line) != None:
+            elif (speech_regex.search(line) != None) and (speech['character'] != None):
                 speech['text'] += cleanMe(speech_regex.search(line).group('speech')) + ' ' #speech is usually written in more lines
         line = inFile.readline()
 
@@ -129,9 +131,10 @@ def parser(movie, read):
 
     inFile.close()
 
-    parsed['female'], parsed['male'], parsed['unknown'] = ClassifyNames.ClassifyNames(list(nameSet))
+    #parsed['female'], parsed['male'], parsed['unknown'] = ClassifyNames.ClassifyNames(list(nameSet))
+    parsed['characters'] = list(nameSet)
 
-    with open('ParsedScripts/json/' + movie, 'w') as outFile:
+    with open('ParsedScripts/' + mn + '.json', 'w') as outFile:
         outFile.write(json.dumps(parsed))
 
 print('hi')
@@ -141,9 +144,12 @@ with open('spacelogs/realspaces.json', 'r') as f:
 
 print('hi again')
 
-movielis = GetMovieList()
+movielis, mn2 = GetMovieList()
 
-for movie in movielis:
+#parser(movielis[0], readspaces)
+
+
+for movie, mn in zip(movielis, mn2):
     if movie != 'Ace Ventura: Pet Detective':
-        parser(movie, readspaces)
+        parser(movie, readspaces, mn)
         print('one done')

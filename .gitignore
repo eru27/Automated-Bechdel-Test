@@ -1,9 +1,9 @@
-/Script parser/Bechdel
-/Script parser/IMSDBBase
-/Script parser/names/names
-/Script parser/ParsedScripts
-/Script parser/RawScripts
-/Script parser/__pycache__
+/ScriptParser/Bechdel
+/ScriptParser/IMSDBBase
+/ScriptParser/names/names
+/ScriptParser/ParsedScripts
+/ScriptParser/RawScripts
+/ScriptParser/__pycache__
 *.log
 *.csv
 *.zip

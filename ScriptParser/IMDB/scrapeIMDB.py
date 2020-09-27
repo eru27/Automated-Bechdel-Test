@@ -112,5 +112,6 @@ def main():
         
     print('done :)')
 
-main()
+#main()
 
+print(getGender('https://www.imdb.com/title/tt0118623/'))

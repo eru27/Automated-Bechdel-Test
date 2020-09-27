@@ -14,8 +14,8 @@ boy_regex = re.compile(r'boy', flags = re.IGNORECASE)
 #dr_regex = re.compile(r'dr', flags = re.IGNORECASE)
 BS_REGEX_LIST = [woman_regex, female_regex, lady_regex, man_regex, male_regex]
 
-FAULTY_LOG = 'characters/logs/badlymatched.log'
-FOUND_LOG = 'characters/logs/hiifound.log'
+FAULTY_LOG = 'characters/logs/badlymatched2.log'
+FOUND_LOG = 'characters/logs/hiifound2.log'
 
 TRASHOLD = 2
 

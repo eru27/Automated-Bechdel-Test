@@ -46,9 +46,15 @@ def getData():
 
 def main():
     X = getData()
+    X.append('balette ig, girly stuff, smthn')
+    X.append('school, balette dolls going to the mall, lets go to the mall today!')
+
     y = [1 for val in X]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
+    y[-2] = 0
+    y[-1] = 0
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
     
     vectorizer = CountVectorizer()
     X_train = vectorizer.fit_transform(X_train)
@@ -57,6 +63,7 @@ def main():
     mnb = MultinomialNB()
     mnb.fit(X_train, y_train)
 
+    print(len(y_train))
     print(len(y_test))
 
     y_pred = mnb.predict(X_test)
@@ -64,15 +71,20 @@ def main():
     cnf_mat = metrics.confusion_matrix(y_test, y_pred)
 
     print(cnf_mat)
+
+    m = metrics.accuracy_score(y_test, y_pred)
+    print(m)
+
+    '''
     for line in cnf_mat:
         for smth in line:
             for k in smth:
                 print(k)
 
-    '''
+    
     with open('idk.json', 'w') as dd:
         dd.write(json.dumps(cnf_mat))
-        '''
+    '''
 
 
 

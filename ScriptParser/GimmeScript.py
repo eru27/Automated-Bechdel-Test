@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import json
+import os.path
 
 MOVIE_LIST = 'Bechdel/2ratedmovies.csv'
 
@@ -48,27 +49,38 @@ def GetJson(fileName): #getting data from file that corresponds with the first l
 
     return fileName, scriptList
 
-def GetScript(fileName, url): #getting script from imsdb.com
-    req = requests.get(url)
-    if req.status_code != 200:
-        print(req, fileName) #consol log because it usually doesn't happen
-    soup = BeautifulSoup(req.text)
-    script = soup.find('pre') #scripts are usually found within <pre> tag
+def GetScript(fileName, url, sb): #getting script from imsdb.com
+    if not os.path.isfile(sb + fileName):
+        print(fileName)
+        req = requests.get(url)
+        if req.status_code != 200:
+            print(req, fileName) #consol log because it usually doesn't happen
+        if url[-1] == 'l' or url[-1] == 'm':
+            soup = BeautifulSoup(req.text)
+            script = soup.find('pre') #scripts are usually found within <pre> tag
+        else:
+            script = req.text
 
-    global UNFOUND_NUM
-    if not script:
-        UNFOUND_NUM += 1
-        with open(LOG_UNFOUNDSCRIPT, 'a') as log:
-            log.write(fileName + '\n') #making log
-    '''
-    if script:
-        with open(SCRIPT_BASE + fileName, 'w') as sFile:
-            sFile.write(str(script))
-    else:
-        UNFOUND_NUM += 1
-        with open(LOG_UNFOUNDSCRIPT, 'a') as log:
-            log.write(fileName + '\n')
-            '''
+        '''
+        global UNFOUND_NUM
+        if not script:
+            UNFOUND_NUM += 1
+            with open(LOG_UNFOUNDSCRIPT, 'a') as log:
+                log.write(fileName + '\n') #making log
+        '''
+        
+        if script:
+            print('.')
+            #with open(SCRIPT_BASE + fileName, 'w') as sFile:
+            with open(sb + fileName, 'w') as sFile:
+                sFile.write(str(script))
+        '''
+        else:
+            UNFOUND_NUM += 1
+            with open(LOG_UNFOUNDSCRIPT, 'a') as log:
+                log.write(fileName + '\n')
+        '''
+    
     return
 
 def main():
@@ -116,4 +128,16 @@ def main():
 
     print(len(matched), len(unmatched)) #console log
 
-main()
+
+def main2():
+    with open('/home/anja/Documents/petnica2k20/ScriptParser/RawScripts/logs/foundraw.json', 'r') as l:
+        found = json.loads(l.read())
+
+    for movie in found[0]:
+        GetScript(movie[2], movie[3], '/home/anja/Documents/petnica2k20/ScriptParser/RawScripts/new/2/')
+
+    for movie in found[1]:
+        GetScript(movie[2], movie[3], '/home/anja/Documents/petnica2k20/ScriptParser/RawScripts/new/3/')
+
+main2()
+#main()

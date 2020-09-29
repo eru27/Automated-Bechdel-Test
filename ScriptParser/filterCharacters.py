@@ -68,7 +68,7 @@ def main():
     for movie in movieList:
         fixedCharacters = [[],[],[]]
         try:
-            with open('characters/' + movie + '.json', 'r') as charF:
+            with open('charactersNew/' + movie + '.json', 'r') as charF:
                 characters = json.loads(charF.read())
 
             for i in range(len(characters[0])):
@@ -124,7 +124,7 @@ def main():
             print(movie + '\n')
         
 
-        with open('characters/woman/' + movie + '.json', 'w') as out:
+        with open('charactersNew/woman/' + movie + '.json', 'w') as out:
             out.write(json.dumps((fixedCharacters[0], fixedCharacters[2])))
             
         '''

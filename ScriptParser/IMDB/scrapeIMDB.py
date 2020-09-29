@@ -5,7 +5,7 @@ import re
 import os
 
 URL = 'https://www.imdb.com/title/tt'
-OUT = 'characters/'
+OUT = 'charactersNew/'
 CASTURL = '/fullcredits?ref_=tt_cl_sm#cast'
 
 def GetMovieList(): #get movies that are found in the IMSDB base
@@ -31,41 +31,61 @@ def getBechdelBase():
     print(len(imdbIds))
     return imdbIds
 
+def getDiffBase():
+    with open('/home/anja/Documents/petnica2k20/ScriptParser/RawScripts/logs/foundraw.json', 'r') as fil:
+        base = json.loads(fil.read())
+    
+    imdbIds = []
+    for movie in base[0]:
+        imdbIds.append((movie[2], movie[0]))
+
+    for movie in base[1]:
+        imdbIds.append((movie[2], movie[0]))
+
+    return imdbIds
+
 def getGender(url):
-    req = requests.get('https://www.imdb.com' + url)
-    if req.status_code != 200:
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        print(url + '\n')
-        return 2
-    else:
-        soup = BeautifulSoup(req.text)
-        data = json.loads(soup.find('script', type = "application/ld+json").text)
-        jobs = []
-        #print(data['jobTitle'])
-        try:
-            if type(data['jobTitle']) is list:
-                jobs = data['jobTitle']
-            else:
-                jobs.append(data['jobTitle'])
-        except:
-            return 2
+    gender = 1
 
-
-        #print(jobs)
-        if 'Actress' in jobs:
-            #print('Actress')
-            return 0
-        elif 'Actor' in jobs:
-            #print('Actor')
-            return 1
+    try:
+        req = requests.get('https://www.imdb.com' + url)
+        if req.status_code != 200:
+            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            print(url + '\n')
+            gender =  2
         else:
-            return 2
+            soup = BeautifulSoup(req.text)
+            data = json.loads(soup.find('script', type = "application/ld+json").text)
+            jobs = []
+            #print(data['jobTitle'])
+            try:
+                if type(data['jobTitle']) is list:
+                    jobs = data['jobTitle']
+                else:
+                    jobs.append(data['jobTitle'])
+            except:
+                gender =  2
+
+
+            #print(jobs)
+            if 'Actress' in jobs:
+                #print('Actress')
+                gender =  0
+            elif 'Actor' in jobs:
+                #print('Actor')
+                gender =  1
+            else:
+                gender =  2
+    except:
+        print(url + '########################################################################################################')
+    return gender
 
 def main():
-    base = getBechdelBase()
-    counter = 6
-    for movie in base[5:]:
-        if not os.path.isfile('characters/' + movie[0] + '.json'):
+    #base = getBechdelBase()
+    base = getDiffBase()
+    counter = 120
+    for movie in base[119:]:
+        if not os.path.isfile('charactersNew/' + movie[0] + '.json') and not os.path.isfile('characters/' + movie[0] + '.json'):
             print('hi, me stuck')
             female = []
             male = []
@@ -77,12 +97,14 @@ def main():
             fullcast_soup = BeautifulSoup(fullcast.text, 'lxml')
             tags = fullcast_soup.find_all('td', {"class": "primary_photo"})
             #print('hi')
+            count = 0
             for tag in tags:
-                print('1')
+                print(count, end = ' ')
+                print('1', end = ' ')
                 persUrl = tag.find_parent('tr').find_all(recursive = False)[1].find('a')['href']
-                print('2')
+                print('2', end = ' ')
                 gender = getGender(persUrl)
-                print('3')
+                print('3', end = ' ')
                 charName = tag.find_parent('tr').find_all(recursive = False)[3].text
                 print('4')
                 charName = re.sub(r'&.*?;', '', charName)
@@ -102,16 +124,16 @@ def main():
                     else:
                         unknown.append(charName)
                     #f.write(str(tag.find_parent('tr').find_all(recursive = False)[3]))
-
+                count += 1
             #f.close()
             print('\n' + movie[0])
-            with open('characters/' + movie[0] + '.json', 'w') as f:
+            with open('charactersNew/' + movie[0] + '.json', 'w') as f:
                 f.write(json.dumps((female, male, unknown)))
             print(counter, '/', len(base))
         counter += 1
         
     print('done :)')
 
-#main()
+main()
 
-print(getGender('https://www.imdb.com/title/tt0118623/'))
+#print(getGender('https://www.imdb.com/title/tt0118623/'))

@@ -14,8 +14,8 @@ boy_regex = re.compile(r'boy', flags = re.IGNORECASE)
 #dr_regex = re.compile(r'dr', flags = re.IGNORECASE)
 BS_REGEX_LIST = [woman_regex, female_regex, lady_regex, man_regex, male_regex]
 
-FAULTY_LOG = 'characters/logs/badlymatched2.log'
-FOUND_LOG = 'characters/logs/hiifound2.log'
+FAULTY_LOG = 'characters/logs/badlymatched3.log'
+FOUND_LOG = 'characters/logs/hiifound3.log'
 
 TRASHOLD = 2
 
@@ -52,7 +52,19 @@ def GetNames():
     return (femaleNames, maleNames)
 
 def main():
-    movieList = GetMovieList()
+    #movieList = GetMovieList()
+    ###########
+
+    with open('/home/anja/Documents/petnica2k20/ScriptParser/RawScripts/logs/foundraw.json', 'r') as mov:
+        ml = json.loads(mov.read())
+
+    movieList = []
+
+    for mo in ml[0] + ml[1]:
+        movieList.append(mo[2])
+
+    ###########
+
     ogNames = GetNames()
 
     gc = 1
@@ -68,7 +80,7 @@ def main():
     for movie in movieList:
         fixedCharacters = [[],[],[]]
         try:
-            with open('charactersNew/' + movie + '.json', 'r') as charF:
+            with open('charactersNew/' + movie + '.json', 'r') as charF: ############
                 characters = json.loads(charF.read())
 
             for i in range(len(characters[0])):
@@ -120,11 +132,11 @@ def main():
             #fixedCharacters[1] = characters[1]
             #fixedCharacters[2] += characters[2]
         except:
-            print(name.search(' ' + re.escape(character) + ' ', flags = re.IGNORECASE))
+            #print(name.search(' ' + re.escape(character) + ' ', flags = re.IGNORECASE))
             print(movie + '\n')
         
 
-        with open('charactersNew/woman/' + movie + '.json', 'w') as out:
+        with open('charactersNew/woman/' + movie + '.json', 'w') as out:############
             out.write(json.dumps((fixedCharacters[0], fixedCharacters[2])))
             
         '''

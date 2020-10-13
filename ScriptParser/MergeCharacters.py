@@ -6,7 +6,7 @@ GET2 = 'characters/woman/'
 
 JSONEXT = '.json'
 
-OUT = 'characters/fixed/'
+OUT = 'charactersNew/fixed/'
 
 as_regex = re.compile(r'\sas\s.*')
 
@@ -19,8 +19,21 @@ def getMovieList(): #get movies that are found in the IMSDB base
 
     return movieNames
 
+def getSecMovieBase():
+    with open('/home/anja/Documents/petnica2k20/ScriptParser/RawScripts/logs/foundraw.json', 'r') as mov:
+        ml = json.loads(mov.read())
+
+    movieList = []
+
+    for mo in ml[0] + ml[1]:
+        movieList.append(mo[2])
+
+    return movieList
+
 def main():
-    movieList = getMovieList()
+    #movieList = getMovieList()
+    movieList = getSecMovieBase()
+
     for movie in movieList:
         with open(GET1 + movie + JSONEXT, 'r') as char:
             character = json.loads(char.read())

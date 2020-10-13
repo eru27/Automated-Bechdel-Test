@@ -1,10 +1,10 @@
 import json
 import re
 
-SCRIPTS_PATH = 'ParsedScripts/new/all/'
+SCRIPTS_PATH = '/home/anja/Documents/petnica2k20/ScriptParser/ParsedScripts/new/all/'
 CHARACTERS_PATH = 'characters/fixed/'
 
-OUT = 'conversations/2/'
+OUT = 'realChar/'
 
 woman_regex = re.compile(r'woman', flags = re.IGNORECASE)
 female_regex = re.compile(r'female', flags = re.IGNORECASE)

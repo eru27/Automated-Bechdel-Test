@@ -37,9 +37,15 @@ def getDiffBase():
     
     imdbIds = []
     for movie in base[0]:
+        if movie[2] == 'Charade':
+            print('yess')
+            
         imdbIds.append((movie[2], movie[0]))
 
     for movie in base[1]:
+        if movie[2] == 'Charade':
+            print('yes')
+
         imdbIds.append((movie[2], movie[0]))
 
     return imdbIds
@@ -83,8 +89,10 @@ def getGender(url):
 def main():
     #base = getBechdelBase()
     base = getDiffBase()
-    counter = 120
-    for movie in base[119:]:
+    counter = 1
+    for movie in base:
+        if movie[0] == 'Charade':
+            print('yes.')
         if not os.path.isfile('charactersNew/' + movie[0] + '.json') and not os.path.isfile('characters/' + movie[0] + '.json'):
             print('hi, me stuck')
             female = []

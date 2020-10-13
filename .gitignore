@@ -4,6 +4,8 @@
 /ScriptParser/ParsedScripts
 /ScriptParser/RawScripts
 /ScriptParser/__pycache__
+/ScriptParser/allRaw
+/ScriptParser/realChar
 *.log
 *.csv
 *.zip
